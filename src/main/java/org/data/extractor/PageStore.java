@@ -1,7 +1,7 @@
 package org.data.extractor;
 
 import lombok.RequiredArgsConstructor;
-import org.data.extractor.entity.WebpageRepository;
+import org.data.extractor.repository.WebpageRepository;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

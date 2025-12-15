@@ -34,7 +34,8 @@ public class ScraperCongresoClaude {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Parse HTML with Jsoup
-        Document doc = Jsoup.parse(response.body());
+        String body = response.body();
+        Document doc = Jsoup.parse(body);
         Element table = doc.selectFirst("table");
 
         if (table == null) {

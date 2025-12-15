@@ -1,6 +1,7 @@
-package org.data.extractor.entity;
+package org.data.extractor.repository;
 
 
+import org.data.extractor.entity.Webpage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

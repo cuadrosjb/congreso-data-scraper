@@ -27,5 +27,5 @@ public class Webpage {
 
     @Lob
     @Column(name = "page_blob", nullable = false)
-    private byte[] pageBlob;
+    private String pageBlob;
 }
