@@ -32,6 +32,7 @@ public class PageScraper {
      */
     public String extractPeriodsFromPage() throws IOException, InterruptedException {
 
+        System.out.println("Fetching page from " + BASE_URL);
         // Fetch the page
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
@@ -41,7 +42,8 @@ public class PageScraper {
         HttpResponse<String> response = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
 
-        // Parse HTML
+        repository.save(Webpage.builder().pageBlob(response.body()).build());
+
         return response.body();
     }
 
@@ -49,6 +51,7 @@ public class PageScraper {
         return repository.findAll().stream()
                 .filter(webpage -> webpage.getInsertedTime().isAfter(Instant.now().minus(1, ChronoUnit.DAYS)))
                 .map(Webpage::getPageBlob)
+                .peek(s -> System.out.println("Found in DB"))
                 .findFirst();
     }
 
@@ -62,7 +65,7 @@ public class PageScraper {
             }
         });
 
-        System.out.println(body);
+//        System.out.println(body);
 
 //        Jsoup.parse(body);
 
