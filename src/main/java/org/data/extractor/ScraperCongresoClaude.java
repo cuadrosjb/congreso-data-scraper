@@ -19,6 +19,8 @@ import java.util.List;
 
 
 public class ScraperCongresoClaude {
+
+
     private static final String BASE_URL = "https://www.congreso.gob.pe/pleno/congresistas/";
 
     public List<Main.CongressMember> scrapeCongressMembers() throws IOException, InterruptedException {
