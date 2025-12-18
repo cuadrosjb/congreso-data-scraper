@@ -3,6 +3,8 @@ package org.data.extractor.service;
 import lombok.RequiredArgsConstructor;
 import org.data.extractor.entity.Webpage;
 import org.data.extractor.repository.WebpageRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +57,7 @@ public class PageScraper {
                 .findFirst();
     }
 
-    public void loadData() throws IOException, InterruptedException {
+    public Document loadDocument() {
 
         String body = getTheLatestFetchedPage().orElseGet(() -> {
             try {
@@ -64,44 +66,9 @@ public class PageScraper {
                 throw new RuntimeException(e);
             }
         });
+        Jsoup.parse(body);
 
-//        System.out.println(body);
-
-//        Jsoup.parse(body);
-
-
+        return Jsoup.parse(body);
     }
-//            }
-//        }
-//    }
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        var scraper = new PageScraper();
-//
-//        // STEP 1: Extract periods from dropdown
-//        System.out.println("STEP 1: Extracting parliamentary periods from dropdown");
-//        System.out.println("=".repeat(70));
-//
-//        var periods = scraper.extractPeriodsFromPage();
-//
-//        System.out.println("\nFound " + periods.size() + " parliamentary periods:\n");
-//
-//        for (var period : periods) {
-//            System.out.printf("  %-35s  Start: %4d  End: %4d  Active: %s%n",
-//                    period.name(),
-//                    period.startYear(),
-//                    period.endYear(),
-//                    period.isActive() ? "✓" : " "
-//            );
-//        }
-//
-//        // STEP 2: Save to PostgreSQL
-//        System.out.println("\n" + "=".repeat(70));
-//        System.out.println("STEP 2: Saving to PostgreSQL database");
-//        System.out.println("=".repeat(70) + "\n");
-//
-////    scraper.savePeriodsToDB(periods);
-//
-//        System.out.println("\n✓ All periods saved successfully!");
-//    }
 
 }

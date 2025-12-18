@@ -1,7 +1,7 @@
 package org.data.extractor;
 
 
-import org.data.extractor.service.PageScraper;
+import org.data.extractor.service.ParseDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +13,7 @@ public class DataScraper {
 
 
     @Autowired
-    PageScraper pageScraper;
+    ParseDocument parseDocument;
 
     public static void main(String[] args) {
         SpringApplication.run(DataScraper.class, args);
@@ -22,7 +22,8 @@ public class DataScraper {
     @Bean
     public CommandLineRunner runMyStartupLogic() {
         return args -> {
-            pageScraper.loadData();
+            parseDocument.getAllCongressMembers().forEach(System.out::println);
+            parseDocument.getAllParliamentaryPeriods().forEach(System.out::println);
         };
     }
 }
