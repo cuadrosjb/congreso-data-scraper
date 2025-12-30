@@ -22,10 +22,10 @@ public class ParseDocument {
 
     private final PageScraper pageScraper;
 
-
     public List<CongressMember> getAllCongressMembers() {
 
         Document doc = pageScraper.loadDocument();
+
         Element table = doc.selectFirst("table");
 
         if (table == null) {

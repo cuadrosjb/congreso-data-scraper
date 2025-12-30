@@ -27,7 +27,7 @@ public class PageScraper {
     private final HttpClient client;
 
     private final WebpageRepository repository;
-
+    private final WebpageRepositoryService webpageRepositoryService;
 
     /**
      * Extract all parliamentary periods from the dropdown on the webpage
@@ -41,10 +41,9 @@ public class PageScraper {
                 .GET()
                 .build();
 
-        HttpResponse<String> response = client.send(request,
-                HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        repository.save(Webpage.builder().pageBlob(response.body()).build());
+        repository.save(Webpage.builder().pageBlob(response.body()).parliamentaryPeriod("Parliamentary PERIODS ONLY").build());
 
         return response.body();
     }
@@ -59,6 +58,7 @@ public class PageScraper {
 
     public Document loadDocument() {
 
+        //has the page already loaded today?
         String body = getTheLatestFetchedPage().orElseGet(() -> {
             try {
                 return extractPeriodsFromPage();

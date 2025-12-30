@@ -21,6 +21,9 @@ public class Webpage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "parliamentary_period", nullable = false)
+    private String parliamentaryPeriod;
+
     @CreationTimestamp
     @Column(name = "inserted_time", nullable = false, updatable = false)
     private Instant insertedTime;
