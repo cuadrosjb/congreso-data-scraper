@@ -5,27 +5,18 @@ import lombok.RequiredArgsConstructor;
 import org.data.extractor.configuration.SeleniumDriverManager;
 import org.data.extractor.entity.Webpage;
 import org.data.extractor.pojo.CongressMember;
-import org.data.extractor.pojo.ParliamentaryPeriod;
 import org.data.extractor.repository.WebpageRepository;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,15 +36,10 @@ public class SeleniumCongressFetcher {
     private WebDriver driver;
 
     public void loadInitialPage() {
-        System.out.println("Loading initial page...");
         driver = driverManager.getDriver();
         driver.get(BASE_URL);
-
-        // Wait for page to fully load
         wait = driverManager.getWait(driver);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
-
-        System.out.println("✓ Page loaded\n");
     }
 
     private List<CongressMember> reloadPageContent(Select option, String periodName) throws InterruptedException {
@@ -87,33 +73,28 @@ public class SeleniumCongressFetcher {
 
 
     private Boolean isPeriodAlreadyLoaded(String periodName) {
-        return webpageRepository.findAll()
+        return webpageRepository.findAllFormatted()
                 .stream()
-                .filter(x -> periodName.equalsIgnoreCase(x.getParliamentaryPeriod()))
-                .map(Webpage::getInsertedTime)
-                .anyMatch(x -> x.isAfter(Instant.now().minus(1, ChronoUnit.DAYS)));
+                .anyMatch(periodName::equalsIgnoreCase);
     }
 
 
-    public List<CongressMember> fetchMembersForPeriod(String periodName) {
+    public List<CongressMember> saveWebpageForParliamentaryPeriod(String periodName) {
+
+
         if (isPeriodAlreadyLoaded(periodName)) {
-
-            System.out.printf("  ✓ Period %s already loaded today -- Skipping reload.%n", periodName);
-
             Optional<String> document = webpageRepository.findAll()
                     .stream()
-                    .filter(webpage -> webpage.getInsertedTime().isAfter(Instant.now().minus(1, ChronoUnit.DAYS)))
                     .filter(webpage -> periodName.equalsIgnoreCase(webpage.getParliamentaryPeriod()))
                     .map(Webpage::getPageBlob)
                     .findFirst();
 
-            if (document.isPresent()) {
+            return document.map(s -> parseMembers(s, periodName)).orElse(Collections.emptyList());
 
-                return parseMembers(document.get(), periodName);
-            }
-
-            return Collections.emptyList();
         }
+
+        System.out.println("Processing parliamentary period: " + periodName);
+
 
 
         loadInitialPage();
@@ -126,7 +107,6 @@ public class SeleniumCongressFetcher {
 
             for (WebElement option : options) {
                 if (Boolean.parseBoolean(option.getAttribute("selected")) && option.getText().trim().equals(periodName)) {
-                    System.out.printf("  ✓ Period already selected -- Skipping %s reload.", periodName);
                     String pageSource = driver.getPageSource();
 
                     //check if already saved
@@ -149,7 +129,6 @@ public class SeleniumCongressFetcher {
 
         } catch (Exception e) {
             System.out.println("  ✗ Error selecting period: " + e.getMessage());
-            e.printStackTrace();
             return List.of();
         }
 

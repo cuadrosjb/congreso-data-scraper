@@ -18,7 +18,14 @@ public interface WebpageRepository extends JpaRepository<Webpage, Long> {
 
     List<Webpage> findByParliamentaryPeriod(String period);
 
-    @Query(nativeQuery = true, value = "SELECT CAST(congreso.webpage.inserted_time AS DATE) AS date_only FROM congreso.webpage;")
+
+    final String FIND_ALL_FORMATTED = """
+            SELECT parliamentary_period
+            FROM congreso.webpage
+            WHERE CAST(inserted_time AS DATE) = CURRENT_DATE
+            """;
+
+    @Query(nativeQuery = true, value = FIND_ALL_FORMATTED)
     List<String> findAllFormatted();
 
 

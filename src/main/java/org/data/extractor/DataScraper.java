@@ -28,7 +28,7 @@ public class DataScraper {
         return args -> {
 //            parseDocument.getAllCongressMembers().forEach(System.out::println);
 //            parseDocument.getAllParliamentaryPeriods().forEach(System.out::println);
-            parseDocument.getAllParliamentaryPeriods().forEach(scf::fetchMembersForPeriod);
+            parseDocument.getAllParliamentaryPeriods().forEach(scf::saveWebpageForParliamentaryPeriod);
         };
     }
 }
